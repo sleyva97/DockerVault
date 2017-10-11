@@ -63,6 +63,7 @@ The point of this project is to just mess around with Docker, Vault and containe
 
 - [x] Run Docker version of vault and Consul
 - [x] Separate containers for Docker and Consul
+- [ ] Enable SSL on vault for encrypted requests
 - [ ] Deploy into Google Cloud Platform using Kubernetes
 - [ ] Find a way to securely manage unseal keys and auth tokens
 - [ ] Automate the process
