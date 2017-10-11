@@ -62,7 +62,7 @@ If these steps are successful you have a working instance of vault in a containe
 The point of this project is to just mess around with Docker, Vault and containers. Each time the container will pull and build vault and consul from source. [Dumb-init](https://github.com/Yelp/dumb-init) is used right now to manage the processes in my container.
 
 - [x] Run Docker version of vault and Consul
-- [ ] Separate containers for Docker and Consul
+- [x] Separate containers for Docker and Consul
 - [ ] Deploy into Google Cloud Platform using Kubernetes
 - [ ] Find a way to securely manage unseal keys and auth tokens
 - [ ] Automate the process
