@@ -1,6 +1,6 @@
 # Vault in a container
 
---------------------------------------------------------------------------------
+---
 
 ## First some basics
 
@@ -27,19 +27,23 @@ Docker is a tool that is used to create, run, and manage applications using cont
 
 Kubernetes is a tool used to manage deployment, exposition, and scaling of containerized services. Think of the scheduler on your PC managing resources and allocating memory for your applications. Kubernetes does the same for your containers and handles the routing between your containers to provide a service. For more information please see the [official documentation](https://kubernetes.io/docs/home/)
 
-### Build and run the container
+---
+
+## Build and run the container
 ```
-docker build . -t vault
-docker run -p 8200:8200 vault
+docker-compose up --build
 ```
-Then run the following commands on your local machine to test that service is up. _Note: This step does require the vault binary be installed on the local machine. For help on installing that please see the [Vault Docs on how to install. ](https://www.vaultproject.io/docs/install/index.html)_
+Then run the following commands on your local machine to test that service is up. _Note: This step does require the vault binary be installed on the local machine. For help on installing that please see the [Vault Docs on how to install ](https://www.vaultproject.io/docs/install/index.html) or perform a request upon the vault [HTTP API](https://www.vaultproject.io/api/index.html)_
 
 ```
 export VAULT_ADDR=127.0.0.1:8200
 vault status
+
+# without vault binary
+curl http://localhost:8200/v1/sys/seal-status
 ```
 
-The output should look similar to this
+The output should look similar to this depending on what method was used
 ```
 Sealed: false
 Key Shares: 5
@@ -55,14 +59,21 @@ High-Availability Enabled: true
 	Leader Cluster Address: https://172.17.0.2:8201
 ```
 
-If these steps are successful you have a working instance of vault in a container to play around with locally on your machine.
+If these steps are successful you have a working instance of vault in a container to play around with locally on your machine. **This container contains some flaws and is not production ready**
 
 ### What is the Scope of this project?
 
-The point of this project is to just mess around with Docker, Vault and containers. Each time the container will pull and build vault and consul from source. [Dumb-init](https://github.com/Yelp/dumb-init) is used right now to manage the processes in my container.
+The point of this project is to just mess around with Docker, Vault and containers. It is just a learning experiment. Each time the container will pull and build vault and consul from source. [Dumb-init](https://github.com/Yelp/dumb-init) is used right now to manage the processes in my container.
 
 - [x] Run Docker version of vault and Consul
 - [x] Separate containers for Docker and Consul
-- [ ] Deploy into Google Cloud Platform using Kubernetes
-- [ ] Find a way to securely manage unseal keys and auth tokens
+- [x] Create a deployment spec for Kubernetes
+- [ ] Find a way to securely manage unseal keys and auth token
+	* TODO: One potential way of managing keys is storing public GPG keys in git repo and using logic in our script to generate an unseal key based on each key in the repo. This way they are encrypted and can be distributed publicly to key holders. Then when vault needs to be unsealed, they keys can be decrypted and used. This way if keys are lost or taken...they are encrypted and can't be used without the private corresponding GPG key.
 - [ ] Automate the process
+
+Things to look at?
+
+- [ ] Packaging vault into habitat?
+ - [ ] Supervisor?
+- [ ] Terraform to manage infrastructure on GCP
