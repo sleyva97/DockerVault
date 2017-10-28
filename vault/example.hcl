@@ -1,5 +1,5 @@
 storage "consul" {
-  address = "consul:8500"
+  address = "localhost:8500"
   path = "vault"
   scheme = "http"
 }
