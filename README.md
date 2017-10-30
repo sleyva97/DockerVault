@@ -37,13 +37,15 @@ Then run the following commands on your local machine to test that service is up
 
 ```
 export VAULT_ADDR=127.0.0.1:8200
-vault status
+vault init
 
-# without vault binary
-curl http://localhost:8200/v1/sys/seal-status
 ```
 
-The output should look similar to this depending on what method was used
+Using the unseal keys provided from the init, run `vault unseal` three times and provide one of the keys.
+
+Now with the vault unsealed run `vault status`
+
+The output will look similar to this:
 ```
 Sealed: false
 Key Shares: 5
@@ -59,16 +61,16 @@ High-Availability Enabled: true
 	Leader Cluster Address: https://172.17.0.2:8201
 ```
 
-If these steps are successful you have a working instance of vault in a container to play around with locally on your machine. **This container contains some flaws and is not production ready**
+If these steps are successful you have a working instance of vault in a container to play around with locally on your machine.
 
 ### What is the Scope of this project?
 
-The point of this project is to just mess around with Docker, Vault and containers. It is just a learning experiment. Each time the container will pull and build vault and consul from source. [Dumb-init](https://github.com/Yelp/dumb-init) is used right now to manage the processes in my container.
+The point of this project is to just mess around with Docker, Vault and containers. It is just a learning experiment. On each commit the containers will be built and pushed to docker hub.
 
 - [x] Run Docker version of vault and Consul
 - [x] Separate containers for Docker and Consul
 - [x] Create a deployment spec for Kubernetes
-- [ ] Create docker image without go dependancies
+- [x] Create docker image without go dependancies
 - [ ] Find a way to securely manage unseal keys and auth token
 	* TODO: One potential way of managing keys is storing public GPG keys in git repo and using logic in our script to generate an unseal key based on each key in the repo. This way they are encrypted and can be distributed publicly to key holders. Then when vault needs to be unsealed, they keys can be decrypted and used. This way if keys are lost or taken...they are encrypted and can't be used without the private corresponding GPG key.
 - [ ] Automate the process
