@@ -73,10 +73,7 @@ The point of this project is to just mess around with Docker, Vault and containe
 - [x] Create docker image without go dependancies
 - [ ] Find a way to securely manage unseal keys and auth token
 	* TODO: One potential way of managing keys is storing public GPG keys in git repo and using logic in our script to generate an unseal key based on each key in the repo. This way they are encrypted and can be distributed publicly to key holders. Then when vault needs to be unsealed, they keys can be decrypted and used. This way if keys are lost or taken...they are encrypted and can't be used without the private corresponding GPG key.
-- [ ] Automate the process
 
 Things to look at?
 
-- [ ] Packaging vault into habitat?
- - [ ] Supervisor?
 - [ ] Terraform to manage infrastructure on GCP
