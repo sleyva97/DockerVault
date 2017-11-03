@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1
 
 ENV VERSION=1.0.0
 

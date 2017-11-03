@@ -1,5 +1,5 @@
 # Build Vault
-FROM golang:latest
+FROM golang:1
 ENV version 1.0.0
 RUN mkdir -p $GOPATH/src/github.com/hashicorp && \
       cd $GOPATH/src/github.com/hashicorp && \
