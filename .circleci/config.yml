@@ -5,24 +5,52 @@ jobs:
       - image: theyorkshiredev/dockerfile-linter
     steps:
     - checkout
-    - run: dockerfilelint consul/Dockerfile
-    - run: dockerfilelint vault/Dockerfile
+    - run:
+        name: lint docker files
+        command: |
+          dockerfilelint consul/Dockerfile
+          dockerfilelint vault/Dockerfile
   "build":
     machine: true
     steps:
       - checkout
-      - run: docker version
-      - run: sudo service docker stop
-      - run: curl -fsSL https://get.docker.com/ | sudo sh
-      - run: docker version
-      - run: docker build vault/ -t vault
-      - run: docker build consul/ -t consul
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run: docker tag vault $DOCKER_USER/vault
-      - run: docker tag consul $DOCKER_USER/consul
-      - run: docker push $DOCKER_USER/vault
-      - run: docker push $DOCKER_USER/consul
-
+      - run:
+          name: Upgrade docker
+          command: |
+             docker version
+             sudo service docker stop
+             curl -fsSL https://get.docker.com/ | sudo sh
+             docker version
+      - run:
+          name: Build and save images
+          command: |
+            echo 'Building...'
+            docker build vault/ -t vault
+            docker build consul/ -t consul
+            echo 'Saving...'
+            mkdir -p docker-images
+            docker save -o docker-images/vault.tar vault
+            docker save -o docker-images/consul.tar consul
+            echo 'Saving to cache'
+      - save_cache:
+          key: docker-images
+          paths:
+            - docker-images
+  "deploy":
+    machine: true
+    steps:
+      - restore_cache:
+          keys: docker-images
+      - run:
+          name: Docker push
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            export vault_image=$(docker load < docker-images/vault.tar | tail -n1 | awk '{print $NF}')
+            export consul_image=$(docker load < docker-images/consul.tar | tail -n1 | awk '{print $NF}')
+            docker tag "$vault_image" $DOCKER_USER/vault
+            docker tag "$consul_image" $DOCKER_USER/consul
+            docker push $DOCKER_USER/vault
+            docker push $DOCKER_USER/consul
 workflows:
   version: 2
   build_and_test:
@@ -31,6 +59,12 @@ workflows:
       - "build":
           requires:
             - "verify"
+          filters:
+            branches:
+              only: master
+      - "deploy":
+          requires:
+            - build
           filters:
             branches:
               only: master
