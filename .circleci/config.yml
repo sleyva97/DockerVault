@@ -44,6 +44,7 @@ jobs:
       - run:
           name: Docker push
           command: |
+            printf "%s/n" "helloworld"
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             export vault_image=$(docker load < docker-images/vault.tar | tail -n1 | awk '{print $NF}')
             export consul_image=$(docker load < docker-images/consul.tar | tail -n1 | awk '{print $NF}')
