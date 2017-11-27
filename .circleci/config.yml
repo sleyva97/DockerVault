@@ -36,6 +36,39 @@ jobs:
           key: docker-images
           paths:
             - docker-images
+  "test":
+    machine: true
+    steps:
+    - checkout
+    - run:
+        name: Upgrade docker
+        command: |
+          printf '%s' "Installing Docker"
+          curl -fsSL https://get.docker.com/ | sudo sh
+          docker version
+    - run:
+        name: Install Docker Compose
+        command: |
+          set -x
+          sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` > ./docker-compose
+          sudo chmod +x ./docker-compose
+    - run:
+        name: Install Vault
+        command: |
+          set -x
+          cd /tmp
+          echo Fetching Vault...
+          curl -L https://releases.hashicorp.com/vault/0.9.0/vault_0.9.0_linux_amd64.zip?_ga=2.50680617.1832357802.1511677005-1273715247.1505411633 > vault.zip
+
+          echo Installing Vault...
+          sudo unzip vault.zip -d /bin/
+          sudo chmod 0755 /bin/vault 
+          vault --version
+    - run:
+        name: Stand up the Vault/Consul stack
+        command: | 
+          ./docker-compose up -d
+    - run: ./test.sh
   "deploy":
     machine: true
     steps:
@@ -44,7 +77,6 @@ jobs:
       - run:
           name: Docker push
           command: |
-            printf "%s/n" "helloworld"
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             export vault_image=$(docker load < docker-images/vault.tar | tail -n1 | awk '{print $NF}')
             export consul_image=$(docker load < docker-images/consul.tar | tail -n1 | awk '{print $NF}')
@@ -60,6 +92,12 @@ workflows:
       - "build":
           requires:
             - "verify"
+          filters:
+            branches:
+              only: master
+      - "test":
+          requires:
+            - "build"
           filters:
             branches:
               only: master

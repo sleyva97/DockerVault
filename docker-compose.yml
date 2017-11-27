@@ -6,5 +6,7 @@ services:
     - "8500:8500"
   vault:
     build: vault/
+    depends_on:
+      - consul
     ports:
     - "8200:8200"
