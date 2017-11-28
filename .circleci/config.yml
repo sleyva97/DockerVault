@@ -10,7 +10,7 @@ jobs:
         command: |
           dockerfilelint consul/Dockerfile
           dockerfilelint vault/Dockerfile
-  "build":
+  "build-vault":
     machine: true
     steps:
       - checkout
@@ -26,10 +26,32 @@ jobs:
           command: |
             echo 'Building...'
             docker build vault/ -t vault
-            docker build consul/ -t consul
             echo 'Saving...'
             mkdir -p docker-images
             docker save -o docker-images/vault.tar vault
+            echo 'Saving to cache'
+      - save_cache:
+          key: docker-images
+          paths:
+            - docker-images
+  "build-consul":
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Upgrade docker
+          command: |
+             docker version
+             sudo service docker stop
+             curl -fsSL https://get.docker.com/ | sudo sh
+             docker version
+      - run:
+          name: Build and save images
+          command: |
+            echo 'Building...'
+            docker build consul/ -t consul
+            echo 'Saving...'
+            mkdir -p docker-images
             docker save -o docker-images/consul.tar consul
             echo 'Saving to cache'
       - save_cache:
@@ -89,18 +111,16 @@ workflows:
   build_and_test:
     jobs:
       - "verify"
-      - "build":
+      - "build-vault":
           requires:
             - "verify"
-          filters:
-            branches:
-              only: master
+      - "build-consul":
+          requires:
+            - "verify"
       - "test":
           requires:
-            - "build"
-          filters:
-            branches:
-              only: master
+            - "build-vault"
+            - "build-consul"
       - "deploy":
           requires:
             - "test" 
