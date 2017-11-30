@@ -1,7 +1,5 @@
 # Vault in a container
 
----
-
 ## First some basics
 
 ### What is Vault?
@@ -10,11 +8,11 @@ Vault is a tool for securely accessing secrets. A secret is anything that you wa
 
 ### What are containers?
 
-To start lets say what containers are not. Containers are not VMs. Sure there are some parallels but thinking of containers in this way can place limits on how you think they can be potentially used. Let consider container and some core technologies surrounding them.
+To start lets say what containers are not. Containers are not VMs. Sure there are some parallels, but thinking of containers in this way can place limits on how you think they can be potentially used. Let consider container and some core technologies surrounding them.
 
 #### Containers
 
-Containers are a packaged self-contained unit that can run virtually anywhere. This includes dependancies as well as your application. Because they are clean, isolated environments they can be used for running your production applications in Kubernetes to testing out commands on you local machine in a clean, isolated environment. The lifecycle of a container is ideally short and the inside of a container should never be touched in production. If changes need to be made to the application or configuration of a container a new container with the changes should be built. This is a very high level explanation and only some of the use cases of containers. Here are some more resources to get started:
+Containers are a packaged self-contained unit that can run virtually anywhere. This includes dependancies as well as your application. Because they are clean, isolated environments they can be used for running your production applications in Kubernetes or even testing out commands on you local machine without affecting your host system. The lifecycle of a container is ideally short and the inside of a container should never be touched in production. If changes need to be made to the application or configuration of a container a new container with the changes should be built. This is a very high level explanation and only some of the use cases of containers. Here are some more resources to get started:
 
 - [A Beginner-Friendly Introduction to Containers, VMs and Docker](https://medium.freecodecamp.org/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b)
 - [Docker Curriculum](https://docker-curriculum.com/)
@@ -25,7 +23,7 @@ Docker is a tool that is used to create, run, and manage applications using cont
 
 #### Kubernetes
 
-Kubernetes is a tool used to manage deployment, exposition, and scaling of containerized services. Think of the scheduler on your PC managing resources and allocating memory for your applications. Kubernetes does the same for your containers and handles the routing between your containers to provide a service. For more information please see the [official documentation](https://kubernetes.io/docs/home/)
+Kubernetes is a tool used to manage deployment, exposition, and scaling of containerized services. Think of the scheduler on your PC managing resources and allocating memory for your applications. Kubernetes does the same for your containers and handles the routing between your containers. For more information please see the [official documentation](https://kubernetes.io/docs/home/)
 
 ---
 
@@ -65,7 +63,7 @@ If these steps are successful you have a working instance of vault in a containe
 
 ### What is the Scope of this project?
 
-The point of this project is to just mess around with Docker, Vault and containers. It is just a learning experiment. On each commit the containers will be built and pushed to docker hub.
+The point of this project is to just mess around with Docker, Vault and containers. It is just a learning experiment. On each commit the containers will be built and pushed to docker hub. Ideally the ultimate goal is to provide a way to deploy vault into kubernetes and allow any services deployed into the cluster to use vault for secret storage.
 
 - [x] Run Docker version of vault and Consul
 - [x] Separate containers for Docker and Consul
@@ -76,12 +74,13 @@ The point of this project is to just mess around with Docker, Vault and containe
 - [x] Proper Pipeline
 	- [x] docker-compose for testing
 - [ ] Services in Kubernetes
+	- [ ] Vault
+		- [x] Service
+		- [ ] Auto kubernetes-vault setup
 	- [ ] [Kubernetes Vault Integration](https://github.com/Boostport/kubernetes-vault)
 	- [ ] fluentd
 	- [ ] external-dns
 	- [ ] SSL Load Balancer Termination
-
-Things to look at?
-
-- [ ] Terraform to manage infrastructure on GCP
-- [ ] Possible switch to AWS for public signed certs (Kops?)
+- [ ] Infrastructure as code (Cloudformation? Terraform?)
+- [ ] AWS EKS
+- [ ] Istio (Kubernetes-vault-init config)
