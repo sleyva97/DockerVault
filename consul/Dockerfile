@@ -19,4 +19,4 @@ RUN cp ./consul /consul
 
 FROM scratch
 COPY --from=0 /consul /bin/consul
-ENTRYPOINT ["consul", "agent", "-server", "-bootstrap-expect", "1", "-data-dir", "/tmp/consul", "-client", "0.0.0.0", "-bind", "127.0.0.1"]
+ENTRYPOINT ["consul", "agent", "-data-dir", "/tmp/consul", "-client", "0.0.0.0", "-bind", "127.0.0.1", "retry-join", "consul-server:8301" ]
